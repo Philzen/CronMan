@@ -1,0 +1,13 @@
+Installation Instructions
+-------------------------
+
+1. Deploy contents of repository to a directory on your webserver (i'll assume "CronMan" for the purpose of this tutorial)
+1a. (recommended) If under your control, point your desired URL or subdomain for the CronMan Management Interface to the CronMan/www/ subdirectory.
+2. Try calling the URL in your browser. Most likely you will see a complaint that the folder 'protected/runtime' is not writable - if not, you may skip step 3.
+3. Ensure the folder CronMan/www/protected/runtime is writable by the webserver process. There are numerous ways to do this, two of them being:
+- (a) If you're using an FTP/SFTP-client (such as FileZilla) to connect to your server, you may just right click on the folder and select "Permissions...". Then just click the appropriate boxes to allow write access by anybody (or just enter '766' into the Permissions box)
+- (b) Open a terminal on your server, cd into the CronMan directory and enter: 
+  chown 766 www/protected
+  
+You should now be able to call up the welcome page of CronMan in your browser.
+
