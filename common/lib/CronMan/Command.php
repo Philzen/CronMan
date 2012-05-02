@@ -1,15 +1,33 @@
 <?php
 
 	namespace CronMan;
-	abstract class Job {
-		private $wasExecuted = false;
 
+	abstract class Command
+	{
+		protected $wasExecuted = false;
 		protected $command = null;
 		protected $returnCode = null;
 		protected $returnEcho = null;
 
-		abstract public function setExecCommand($string) ;
-		abstract public function getExecCommand();
+		/**
+		 * Set the command to be executed
+		 * @param string $command
+		 * @return \CronMan\Command\Local
+		 */
+		public function set($command)
+		{
+			$this->command = $command;
+			return $this;
+		}
+
+		/**
+		 * Get the command to be executed
+		 * @return string
+		 */
+		public function get()
+		{
+			return $this->command;
+		}
 
 		abstract public function execute();
 
@@ -27,7 +45,8 @@
 
 		/**
 		 * After having called execute, you may check the result output here
-		 * @return int The runtime output of the job or FALSE if the job has not been executed yet
+		 * @return array The runtime output of the job in an array containing one line of output per element,
+		 * or FALSE if the job has not been executed yet. s
 		 */
 		public function getReturnEcho()
 		{
@@ -46,3 +65,4 @@
 		}
 
 	}
+

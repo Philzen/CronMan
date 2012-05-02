@@ -1,6 +1,6 @@
 <?php
-	
-	namespace CronMan\Job;
+
+	namespace CronMan\Command;
 	class Type {
 
 			/**
