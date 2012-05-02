@@ -1,5 +1,11 @@
 <?php
 
+function __autoload($className) {
+	include_once str_replace("\\", "/", $className).".php";
+}
+set_include_path(__DIR__ . DIRECTORY_SEPARATOR . realpath('../lib'));
+
+
 // change the following paths if necessary
 $yii=dirname(__FILE__).'/../common/lib/yii/yii.php';
 $config=dirname(__FILE__).'/protected/config/main.php';
