@@ -1,28 +1,57 @@
-CREATE TABLE tbl_user (
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(128) NOT NULL,
-    password VARCHAR(128) NOT NULL,
-    email VARCHAR(128) NOT NULL
+
+CREATE TABLE config (
+                key_name VARCHAR NOT NULL,
+                value VARCHAR NOT NULL,
+                PRIMARY KEY (key_name)
 );
 
-INSERT INTO tbl_user (username, password, email) VALUES ('test1', 'pass1', 'test1@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test2', 'pass2', 'test2@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test3', 'pass3', 'test3@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test4', 'pass4', 'test4@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test5', 'pass5', 'test5@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test6', 'pass6', 'test6@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test7', 'pass7', 'test7@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test8', 'pass8', 'test8@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test9', 'pass9', 'test9@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test10', 'pass10', 'test10@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test11', 'pass11', 'test11@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test12', 'pass12', 'test12@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test13', 'pass13', 'test13@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test14', 'pass14', 'test14@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test15', 'pass15', 'test15@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test16', 'pass16', 'test16@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test17', 'pass17', 'test17@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test18', 'pass18', 'test18@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test19', 'pass19', 'test19@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test20', 'pass20', 'test20@example.com');
-INSERT INTO tbl_user (username, password, email) VALUES ('test21', 'pass21', 'test21@example.com');
+
+CREATE TABLE job (
+                id INT AUTO_INCREMENT NOT NULL,
+                type SMALLINT NOT NULL,
+                display_name VARCHAR NOT NULL,
+                description VARCHAR NOT NULL,
+                cron_times VARCHAR NOT NULL,
+                exec_path VARCHAR NOT NULL,
+                max_exec_time SMALLINT NOT NULL,
+                max_retry SMALLINT DEFAULT 0 NOT NULL,
+                panic_threshold SMALLINT NOT NULL,
+                created_on DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                changed_on DATETIME,
+                PRIMARY KEY (id)
+);
+
+ALTER TABLE job MODIFY COLUMN type SMALLINT COMMENT 'Hardcoded Job-Types
+0: LOCAL, 1: SSH, 2: HTTP';
+
+ALTER TABLE job MODIFY COLUMN cron_times VARCHAR COMMENT 'Schedule in Cron Definition format (http://www.wikipedia.org/wiki/Cron)';
+
+ALTER TABLE job MODIFY COLUMN max_exec_time SMALLINT COMMENT 'Maximum allowed script execution time in seconds';
+
+ALTER TABLE job MODIFY COLUMN max_retry SMALLINT COMMENT 'Retries after job failure before it''s considered broken';
+
+ALTER TABLE job MODIFY COLUMN panic_threshold SMALLINT COMMENT 'Seconds of continuous job failure after which admins will be alarmed';
+
+ALTER TABLE job MODIFY COLUMN created_on TIMESTAMP COMMENT 'Date this job was created';
+
+ALTER TABLE job MODIFY COLUMN changed_on TIMESTAMP COMMENT 'Timestamp the job setup was last modified';
+
+
+CREATE TABLE job_run (
+                id BIGINT AUTO_INCREMENT NOT NULL,
+                job_id INT NOT NULL,
+                start_time DATETIME NOT NULL,
+                end_time DATETIME NOT NULL,
+                running_flag BOOLEAN NOT NULL,
+                success_flag BOOLEAN NOT NULL,
+                output VARCHAR NOT NULL,
+                exit_code SMALLINT NOT NULL,
+                PRIMARY KEY (id)
+);
+
+
+ALTER TABLE job_run ADD CONSTRAINT cronjob_log_fk
+FOREIGN KEY (job_id)
+REFERENCES job (id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;

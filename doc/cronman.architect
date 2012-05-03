@@ -27,7 +27,7 @@
      <remarks></remarks>
     </column>
     <column id="COL6" populated="true" UUID="ea61b533-9e28-431a-ab3e-c7b45bfb8d55" autoIncrement="false" autoIncrementSequenceName="job_cron_times_seq" defaultValue="" name="cron_times" nullable="0" physicalName="cron_times" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
-     <remarks>ition format (http://www.wikipedia.org/wiki/Cron)</remarks>
+     <remarks>Schedule in Cron Definition format (http://www.wikipedia.org/wiki/Cron)</remarks>
     </column>
     <column id="COL7" populated="true" UUID="34dc01df-d5c4-4bcd-9f92-972aca74382c" autoIncrement="false" autoIncrementSequenceName="job_exec_path_seq" defaultValue="" name="exec_path" nullable="0" physicalName="exec_path" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks></remarks>

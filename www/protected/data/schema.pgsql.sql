@@ -6,8 +6,10 @@ CREATE TABLE config (
 );
 
 
+CREATE SEQUENCE job_id_seq;
+
 CREATE TABLE job (
-                id INTEGER NOT NULL,
+                id INTEGER NOT NULL DEFAULT nextval('job_id_seq'),
                 type SMALLINT NOT NULL,
                 display_name VARCHAR NOT NULL,
                 description VARCHAR NOT NULL,
@@ -30,8 +32,12 @@ COMMENT ON COLUMN job.created_on IS 'Date this job was created';
 COMMENT ON COLUMN job.changed_on IS 'Timestamp the job setup was last modified';
 
 
+ALTER SEQUENCE job_id_seq OWNED BY job.id;
+
+CREATE SEQUENCE job_run_id_seq;
+
 CREATE TABLE job_run (
-                id BIGINT NOT NULL,
+                id BIGINT NOT NULL DEFAULT nextval('job_run_id_seq'),
                 job_id INTEGER NOT NULL,
                 start_time TIMESTAMP NOT NULL,
                 end_time TIMESTAMP NOT NULL,
@@ -42,6 +48,8 @@ CREATE TABLE job_run (
                 CONSTRAINT job_run_pk PRIMARY KEY (id)
 );
 
+
+ALTER SEQUENCE job_run_id_seq OWNED BY job_run.id;
 
 ALTER TABLE job_run ADD CONSTRAINT cronjob_log_fk
 FOREIGN KEY (job_id)
