@@ -1,5 +1,11 @@
 <?php
-/* @var $this PostController */
+$this->pageTitle=Yii::app()->name . ' - Setup Step 1: Prerequisites';
+$this->breadcrumbs=array(
+	'Setup', 'Prerequisites'
+);
+
+
+	/* @var $this PostController */
 /* @var $model Post */
 	$this->pageTitle=Yii::app()->name;
 
@@ -10,8 +16,9 @@
 		'mysql' => CronMan\Environment::hasMySqlModules(),
 		'pgsql' => CronMan\Environment::hasPgSqlModules(),
 		'sqlite' => CronMan\Environment::hasSQLiteModules(),
+		'data_dir' => is_writable(Yii::app()->basePath.'/data'),
 		'list_cron' => CronMan\Environment::canListCrontab(),
-		'edit_cron' => CronMan\Environment::canEditCrontab(),
+		'edit_cron' => CronMan\Environment::canEditCrontab( Yii::app()->basePath.'/runtime' ),
 		'ssh' => CronMan\Environment::canUseSsh(),
 		'curl' => CronMan\Environment::hasCurlModule(),
 		'php' => CronMan\Environment::hasModernPhp(),
@@ -30,12 +37,10 @@
 		else
 			return 'cannot';
 	};
-
 ?>
+<h2>Setup</h2>
+<h3><? if (!Yii::app()->session['config']) echo 'Step 1 - '; ?>Prerequisites / Environment Check</h3>
 
-<h2>Setup CronMan</h2>
-
-<p>Environment Check:</p>
 <table>
 	<thead>
 		<tr>
@@ -73,6 +78,11 @@
 			<td colspan="2"><div>How much command line Kung-Fu is permitted on this machine?</div></td>
 		</tr>
 		<tr>
+			<td>Writable Directory</td>
+			<td><?= $format($environment['data_dir']) ?></td>
+			<td>CronMan <?= $canCannot($environment['list_cron']) ?> write to the data directory to manage configuration and setup for you.</td>
+		</tr>
+		<tr>
 			<td>List Crontab</td>
 			<td><?= $format($environment['list_cron']) ?></td>
 			<td>Your php user <?= $canCannot($environment['list_cron']) ?> list its own crontab.</td>
@@ -106,9 +116,14 @@
 	</tbody>
 </table>
 
-<? if (!Yii::app()->params['config']): ?>
+<? if (!Yii::app()->params['config']):
+	/** @todo Check if prerequisites suffice and give appropriate hints **/
+?>
 <p>
-	You don't have configured CronMan yet. <a href="<?= $this->createUrl('setup/select-db') ?>">Click here</a> to get (hopefully) ready in just a few clicks!
+	Excellent - you will be able to run CronMan without further ado.
+	In the next step you may select the database type for your CronMan installation.
+	<a href="<?= $this->createUrl('setup/selectDb') ?>">
+	<button style="float: right">Go to Step 2</button></a>
 </p>
 <? endif; ?>
 

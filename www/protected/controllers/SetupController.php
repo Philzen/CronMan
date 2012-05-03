@@ -22,8 +22,6 @@
 		 */
 		public function actionIndex()
 		{
-			if (!Yii::app()->params['config'])
-				$this->forward('setup/prerequisites');
 			// renders the view file 'protected/views/setup/index.php'
 			// using the default layout 'protected/views/layouts/main.php'
 			$this->render('index');
