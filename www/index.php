@@ -1,10 +1,9 @@
 <?php
-
+set_include_path(__DIR__ . PATH_SEPARATOR . realpath('../common/lib'));
+spl_autoload_unregister(array('YiiBase','autoload'));
 function __autoload($className) {
-	include_once str_replace("\\", "/", $className).".php";
+	include str_replace("\\", "/", $className).".php";
 }
-set_include_path(__DIR__ . DIRECTORY_SEPARATOR . realpath('../lib'));
-
 
 // change the following paths if necessary
 $yii=dirname(__FILE__).'/../common/lib/yii/yii.php';
@@ -16,4 +15,6 @@ defined('YII_DEBUG') or define('YII_DEBUG',true);
 defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
 
 require_once($yii);
+spl_autoload_register('__autoload');
 Yii::createWebApplication($config)->run();
+
