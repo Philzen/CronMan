@@ -1,0 +1,28 @@
+td.subheader {
+	padding: 2px 10px;
+	background-color: #eee;
+	font-size: 90%;
+	font-weight: bold;
+}
+
+td.subheader div {
+	margin-left: 10px;
+	background-color: #fff;
+	display: inline-block;
+	font-weight: normal;
+	border-radius: 5px;
+	padding: 2px;
+	border: #ddd 1px solid;
+}
+
+.success {
+	color: green;
+}
+
+.warning {
+	color: orange;
+}
+
+.failure {
+	color: red;
+}
