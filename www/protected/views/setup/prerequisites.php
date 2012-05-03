@@ -105,3 +105,11 @@
 		</tr>
 	</tbody>
 </table>
+
+<? if (!Yii::app()->params['config']): ?>
+<p>
+	You don't have configured CronMan yet. <a href="<?= $this->createUrl('setup/select-db') ?>">Click here</a> to get (hopefully) ready in just a few clicks!
+</p>
+<? endif; ?>
+
+
