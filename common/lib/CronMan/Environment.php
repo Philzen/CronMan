@@ -12,9 +12,9 @@
 			return extension_loaded('pdo_mysql');
 		}
 
-		public static function hasPQSqlModules()
+		public static function hasPgSqlModules()
 		{
-			return extension_loaded('pdo_pqsql');
+			return extension_loaded('pdo_pgsql');
 		}
 
 	}
