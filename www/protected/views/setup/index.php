@@ -12,7 +12,9 @@
 		'sqlite' => CronMan\Environment::hasSQLiteModules(),
 		'list_cron' => CronMan\Environment::canListCrontab(),
 		'edit_cron' => CronMan\Environment::canEditCrontab(),
-		'ssh' => CronMan\Environment::canUseSsh()
+		'ssh' => CronMan\Environment::canUseSsh(),
+		'curl' => CronMan\Environment::hasCurlModule(),
+		'php' => CronMan\Environment::hasModernPhp(),
 	);
 
 	$format = function ($checkValue) {
@@ -43,7 +45,10 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr><td class="subheader" colspan="3">Distributed Databases<div>Preferable if you want scalability over multiple servers.</div></td></tr>
+		<tr class="subheader">
+			<td>Distributed Databases</td>
+			<td colspan="2"><div>You will need one of these if you want scalability over multiple servers.</div></td>
+		</tr>
 		<tr>
 			<td>MySQL Database PDO Driver</td>
 			<td><?= $format($environment['mysql']) ?></td>
@@ -54,13 +59,19 @@
 			<td><?= $format($environment['pgsql']) ?></td>
 			<td></td>
 		</tr>
-		<tr><td class="subheader" colspan="3">Local Database<div>Will allow you to run standalone without the need of a database service, respectively server.</div></td></tr>
+		<tr class="subheader">
+			<td >Local Database</td>
+			<td colspan="2"><div>Will allow you to run standalone without the need of a database service, respectively server.</div></td>
+		</tr>
 		<tr>
 			<td>SQLite "Database" PDO Driver</td>
 			<td><?= $format($environment['sqlite']) ?></td>
 			<td></td>
 		</tr>
-		<tr><td class="subheader" colspan="3">Your User Rights<div>Checking how powerful your current user on the server is.</div></td></tr>
+		<tr class="subheader">
+			<td>Your User Rights</td>
+			<td colspan="2"><div>How much command line Kung-Fu is permitted on this machine?</div></td>
+		</tr>
 		<tr>
 			<td>List Crontab</td>
 			<td><?= $format($environment['list_cron']) ?></td>
@@ -77,6 +88,20 @@
 			<td>SSH</td>
 			<td><?= $format($environment['ssh']) ?></td>
 			<td>It looks like you <?= $canCannot($environment['ssh']) ?> establish ssh connections to remote servers.</td>
+		</tr>
+		<tr>
+			<td>CUrl</td>
+			<td><?= $format($environment['curl']) ?></td>
+			<td>CronMan <?= $canCannot($environment['ssh']) ?> make proper CUrl HTTP calls from this machine.</td>
+		</tr>
+		<tr class="subheader">
+			<td>Other</td>
+			<td colspan="2"><div>Other rather interesting stuff about the environment</div></td>
+		</tr>
+		<tr>
+			<td>PHP Version</td>
+			<td><?= $format($environment['php']) ?></td>
+			<td>You have Version <?= phpversion() ?> installed, which <?= $canCannot($environment['php']) ?> be relied on to be modern and stable to support CronMan's functionalities.</td>
 		</tr>
 	</tbody>
 </table>

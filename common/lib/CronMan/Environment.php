@@ -3,6 +3,20 @@
 	class Environment {
 
 		/**
+		 * Check for PHP Version greater than 5.3.7
+		 * @return boolean
+		 */
+		public static function hasModernPhp()
+		{
+			$phpversion = explode('-', phpversion());
+			$phpversion = explode('.', $phpversion[0] );
+			return
+				($phpversion[0] == 5 && $phpversion [1] == 3 && $phpversion[2] > 7)
+				|| ($phpversion[0] == 5 && $phpversion [1] > 3)
+				|| ($phpversion[0] > 5);
+		}
+
+		/**
 		 * Check if PDO Module for SQLite is available
 		 * @return boolean
 		 */
@@ -77,5 +91,15 @@
 				return true;
 
 			return false;
+		}
+
+		/**
+		 * Check if the Environment has the curl module installed
+		 * (curl_init() needs to exists, to be precise)
+		 * @return boolean
+		 */
+		public static function hasCurlModule()
+		{
+			return function_exists('curl_init');
 		}
 	}
