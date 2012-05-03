@@ -96,10 +96,10 @@
 		</tr>
 		<tr class="subheader">
 			<td>Other</td>
-			<td colspan="2"><div>Other rather interesting stuff about the environment</div></td>
+			<td colspan="2"><div>Other rather notable stuff about the environment</div></td>
 		</tr>
 		<tr>
-			<td>PHP Version</td>
+			<td>PHP Version (>= 5.3.8 recommended)</td>
 			<td><?= $format($environment['php']) ?></td>
 			<td>You have Version <?= phpversion() ?> installed, which <?= $canCannot($environment['php']) ?> be relied on to be modern and stable to support CronMan's functionalities.</td>
 		</tr>

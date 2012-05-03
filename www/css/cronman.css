@@ -6,6 +6,10 @@ tr.subheader td {
 	font-weight: bold;
 }
 
+tr td:first-child {
+	white-space: nowrap;
+}
+
 tr.subheader td div {
 	margin-left: 10px;
 	background-color: #fff;
