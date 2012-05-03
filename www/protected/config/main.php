@@ -1,7 +1,6 @@
 <?php
-
 // uncomment the following to define a path alias
-// Yii::setPathOfAlias('local','path/to/local-folder');
+//Yii::setPathOfAlias('cronman',realpath('../common/lib/CronMan'));
 
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
@@ -37,7 +36,6 @@ return array(
 			'allowAutoLogin'=>true,
 		),
 		// uncomment the following to enable URLs in path-format
-		/*
 		'urlManager'=>array(
 			'urlFormat'=>'path',
 			'rules'=>array(
@@ -46,7 +44,6 @@ return array(
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
 			),
 		),
-		*/
 		'db'=>array(
 			'connectionString' => 'sqlite:'.dirname(__FILE__).'/../data/testdrive.db',
 		),
