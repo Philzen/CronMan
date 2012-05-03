@@ -1,11 +1,12 @@
-td.subheader {
+tr.subheader td {
 	padding: 2px 10px;
+	border-top: 10px solid #FFFFFF;
 	background-color: #eee;
 	font-size: 90%;
 	font-weight: bold;
 }
 
-td.subheader div {
+tr.subheader td div {
 	margin-left: 10px;
 	background-color: #fff;
 	display: inline-block;
