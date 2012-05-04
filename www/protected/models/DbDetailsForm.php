@@ -5,7 +5,7 @@ class DbDetailsForm extends CFormModel
 	public $hostname;
 	public $username;
 	public $password;
-	public $database;
+	public $dbname;
 	public $port;
 
 	/**
@@ -14,8 +14,7 @@ class DbDetailsForm extends CFormModel
 	public function rules()
 	{
 		return array(
-			// name, email, subject and body are required
-			array('hostname, username, password, port', 'required'),
+			array('hostname,port,dbname,username,password', 'required'),
 		);
 	}
 
@@ -27,7 +26,7 @@ class DbDetailsForm extends CFormModel
 	public function attributeLabels()
 	{
 		return array(
-			'dbType'=>'Database Type',
+
 		);
 	}
 }
