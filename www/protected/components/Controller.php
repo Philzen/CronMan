@@ -23,7 +23,8 @@ class Controller extends CController
 
 	protected function cmConfigLoaded()
 	{
-		return Yii::app()->session['config'];
+		// Yii::app()->session->clear();
+		return isset(Yii::app()->session['config']);
 	}
 
 	protected function cmInstalled()
