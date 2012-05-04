@@ -1,16 +1,17 @@
 <?php
-$this->pageTitle=Yii::app()->name . ' - Installation ';
+$this->pageTitle=Yii::app()->name . ' - Select Database';
 $this->breadcrumbs=array(
 	'Setup', 'Select Database'
 );
 ?>
 <h2>Setup</h2>
-<h3><? if (!Yii::app()->session['config']) echo 'Step 2 - '; ?>Select Database Flavour</h3>
-
+<h3><? if (!$configured) echo 'Step 2 - '; ?>Select Database Flavour</h3>
+<div class="form">
 <?php
-	echo $form;
+	echo $form; ?>
+</div>
 
-if (!Yii::app()->session['config']):	?>
+<? if (!$configured):	?>
 <p>In the next step you will configure the database connection details (if any required)</p>
 <?php endif; ?>
 

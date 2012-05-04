@@ -5,7 +5,7 @@
 		'elements' => array(
 			'dbType' => array(
 				'type' => 'dropdownlist',
-				'items' => array(0=>'PostgreSQL', 1=>'MySQL', 2=> 'SQLite', 3=> 'Local (Custom CronMan DB)'),
+				'items' => array('pgsql' =>'PostgreSQL', 'mysql'=>'MySQL', 'sqlite' => 'SQLite', 'php' => 'Local (Custom CronMan DB)'),
 				'prompt' => 'Please select a database system'
 			)
 		),
