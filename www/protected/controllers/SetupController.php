@@ -62,11 +62,12 @@
 			$config =Yii::app()->session['config'];
 
 			$model = new DbDetailsForm();
+
+			if (!isset($_POST['DbDetailsForm']) && isset(Yii::app()->session['config']['db']))
+				$model->attributes = Yii::app()->session['config']['db'];
 			$form = new CForm('application.views.setup.'.$config['db']['type'].'DetailsForm', $model);
 
 			// Restore previous entries, if present
-			if (!isset($_POST) && isset(Yii::app()->session['config']['db']))
-				$model->attributes = Yii::app()->session['config']['db'];
 
 			if ($form->submitted('submit') && $form->validate())
 			{
