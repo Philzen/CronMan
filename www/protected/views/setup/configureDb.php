@@ -8,7 +8,7 @@ $this->breadcrumbs=array(
 <h3><? if (!$configured) echo 'Step 3 - '; ?>Configure Database Connection Details</h3>
 
 <div class="form">
-	<? echo $form;
+	<?
 	if ($dbSuccess === true): ?>
 	<div class="flash-success">
 		<p>Nice! Connection succeded.</p>
@@ -18,7 +18,7 @@ $this->breadcrumbs=array(
 	</div>
 	<?
 	elseif(is_string($dbSuccess)):	?>
-	<div class="flash-error">
+	<div class="errorSummary">
 		<p>Hate to say, but these details don't seem to work. Connect failed with following message</p>
 		<span>
 		<?=$dbSuccess ?></span>
@@ -29,7 +29,7 @@ $this->breadcrumbs=array(
 		<?
 	endif;
 
-
+echo $form;
 ?>
 
 
