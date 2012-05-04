@@ -4,3 +4,5 @@ protected/runtime/
 themes/classic/views/
 /www/nbproject/private/
 /nbproject/private/
+/www/protected/runtime/
+/www/protected/data/cronMan.conf.php
