@@ -15,6 +15,7 @@ class DbDetailsForm extends CFormModel
 	{
 		return array(
 			array('hostname,port,dbname,username,password', 'required'),
+			array('port', 'type', 'type' => 'integer'),
 		);
 	}
 
