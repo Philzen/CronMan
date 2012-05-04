@@ -10,7 +10,7 @@ $this->breadcrumbs=array(
 
 <h2>Setup</h2>
 
-<? if (!Yii::app()->session['config']): ?>
+<? if (!$configured): ?>
 <p>
 	You don't have configured CronMan yet. <a href="<?= $this->createUrl('setup/prerequisites') ?>">Click here</a> to go to the Prerequisites Screen and check what the current server environment will enable us to do out-of-the-box!
 </p>
