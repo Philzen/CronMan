@@ -1,5 +1,5 @@
 <?php
-$this->pageTitle=Yii::app()->name . ' - Setup Step 1: Prerequisites';
+$this->pageTitle=Yii::app()->name . ' - Prerequisites';
 $this->breadcrumbs=array(
 	'Setup', 'Prerequisites'
 );
@@ -39,7 +39,7 @@ $this->breadcrumbs=array(
 	};
 ?>
 <h2>Setup</h2>
-<h3><? if (!Yii::app()->session['config']) echo 'Step 1 - '; ?>Prerequisites / Environment Check</h3>
+<h3><? if (!$configured) echo 'Step 1 - '; ?>Prerequisites / Environment Check</h3>
 
 <table>
 	<thead>
@@ -116,7 +116,7 @@ $this->breadcrumbs=array(
 	</tbody>
 </table>
 
-<? if (!Yii::app()->params['config']):
+<? if (!$configured):
 	/** @todo Check if prerequisites suffice and give appropriate hints **/
 ?>
 <p>
