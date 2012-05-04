@@ -83,5 +83,7 @@ return array(
 	'params'=>array(
 		// this is used in contact page
 		'adminEmail'=>'webmaster@example.com',
+		'configPath'=> realpath(__DIR__.'/../data'),
+		'configFile'=> 'cronMan.conf.php'
 	),
 );
