@@ -45,7 +45,12 @@
 
 			if ($form->submitted('ok') && $form->validate()) {
 				$config = array('installation-finished' => false, 'db' => array('type' => $model->dbType));
-				Yii::app()->session['config'] = array_merge($config, Yii::app()->session['config']);
+
+				if ($this->cmConfigLoaded())
+					$config = array_merge($config, Yii::app()->session['config']);
+
+				Yii::app()->session['config'] = $config;
+
 				$this->redirect($this->createUrl('setup/configureDb'));
 			}
 			$this->render('select-db', array ('form' => $form, 'configured' => $this->cmInstalled()));
@@ -60,7 +65,7 @@
 			$form = new CForm('application.views.setup.'.$config['db']['type'].'DetailsForm', $model);
 
 			// Restore previous entries, if present
-			if (isset(Yii::app()->session['config']['db']))
+			if (!isset($_POST) && isset(Yii::app()->session['config']['db']))
 				$model->attributes = Yii::app()->session['config']['db'];
 
 			if ($form->submitted('submit') && $form->validate())
