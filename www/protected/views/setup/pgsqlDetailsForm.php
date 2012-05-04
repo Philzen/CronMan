@@ -2,6 +2,10 @@
 
 	return array(
 		'title' => 'Please enter the PostgreSQL database connection details below',
+		'showErrorSummary' => true,
+		'activeForm' => array(
+			'stateful' => true,
+		),
 		'elements' => array(
 			'hostname' => array(
 				'type' => 'text',
@@ -12,13 +16,14 @@
 				'type' => 'text',
 				'maxlength' => 5,
 				'label' => 'Port',
-				'value' => 5432,
+				'value' => empty($_POST) ? 5432 : null,
 			),
 			'dbname' => array(
 				'type' => 'text',
 				'maxlength' => 64,
 				'label' => 'Database',
-				'value' => 'cronman',
+				'value' => empty($_POST) ? 'cronman' : null,
+				'hint' => 'The DB Logon User needs to be the onwer of the Database'
 			),
 			'username' => array(
 				'type' => 'text',

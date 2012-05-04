@@ -2,6 +2,7 @@
 
 	return array(
 		'title' => 'Please enter the MySQL database connection details below',
+		'showErrorSummary' => true,
 		'elements' => array(
 			'hostname' => array(
 				'type' => 'text',
@@ -12,13 +13,14 @@
 				'type' => 'text',
 				'maxlength' => 5,
 				'label' => 'Port',
-				'value' => 3306,
+				'default' => empty($_POST) ? 3306 : null,
 			),
 			'dbname' => array(
 				'type' => 'text',
 				'maxlength' => 64,
 				'label' => 'Database',
-				'value' => 'cronman',
+				'value' => empty($_POST) ? 'cronman' : null,
+				'hint' => 'The DB Logon User needs to be the onwer of the Database'
 			),
 			'username' => array(
 				'type' => 'text',
