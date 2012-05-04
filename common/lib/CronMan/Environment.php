@@ -2,6 +2,8 @@
 	namespace CronMan;
 	class Environment {
 
+		protected static $crontabCache = null;
+
 		/**
 		 * Check for PHP Version greater than 5.3.7
 		 * @return boolean
@@ -51,26 +53,32 @@
 		{
 			$testOutput = null;
 			$testResultCode = null;
-			exec('crontab -l', $testOutput, $testResultCode);
-			if ($testResultCode == 0 && false === strpos(strtolower( implode("\n", $testOutput)), 'denied') )
+			$lastLine = exec('crontab -l 2>&1', $testOutput, $testResultCode);
+			if ( ($testResultCode == 0 || $testResultCode == 1 ) && false === strpos(strtolower( implode("\n", $testOutput)), 'permission denied') ) {
+				self::$crontabCache = implode("\n", $testOutput);
 				return true;
+			}
 
 			return false;
 		}
 
 		/**
 		 * Check if "crontab -e" can be executed on current machine
-		 * @return boolean
+		 * @param $writableDir string Any directory writable to the server process - required only if Yii-Library is not available
 		 * @todo Test thoroughly respectively find a better way to detect permission to edit crontab
 		 */
-		public static function canEditCrontab()
+		public static function canEditCrontab($writableDir)
 		{
-			$testOutput = null;
-			$testResultCode = null;
-			exec('crontab -e', $testOutput, $testResultCode);
-			if ($testResultCode == 1 && false === strpos(strtolower( implode("\n", $testOutput)), 'permission denied') && false === strpos(strtolower( implode("\n", $testOutput)), 'keine berechtigung'))
-				return true;
+			if (!self::canListCrontab())
+				return false;
 
+			if (file_put_contents($writableDir.'/tmp.cron.cm', self::$crontabCache)) {
+				$testOutput = null;
+				$testResultCode = null;
+				exec("crontab $writableDir/tmp.cron.cm 2>&1", $testOutput, $testResultCode);
+				if ($testResultCode == 0 && false === strpos(strtolower( implode("\n", $testOutput)), 'permission denied'))
+					return true;
+			}
 			return false;
 		}
 
