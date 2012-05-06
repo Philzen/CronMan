@@ -52,8 +52,8 @@ $renderErrors = function ($key, $permissionErrors, $labels)
 <h3><? if (!$configured) echo 'Step 4 - '; ?>Create CronMan Database</h3>
 
 <div class="form">
-	<form>
-<?		if (isset($permissionErrors)):
+	<form method="post">
+<?		if (count($permissionErrors)):
 			$weCanRunTheCreationScript = true;	?>
 		<table>
 			<caption>Checking your Database Permissions...</caption>
@@ -81,7 +81,28 @@ $renderErrors = function ($key, $permissionErrors, $labels)
 			<input type="button" value="Modify DB Login Data" />
 			<input type="submit" name="create-now" value="Try to create database anyway" />
 <?		endif;	?>
-	<? endif; ?>
+	<? endif;
+		if ($dbCreated === true):	?>
+			<div class="flash-success">
+				<p>The Cronman Database has successfully been created.</p>
+			</div>
+<?		elseif (is_array($dbCreated)):
+			if ($dbExists):?>
+			<div class="flash-notice">
+				<p>The Cronman Database was created with errors:</p>
+<?			else:	?>
+			<div class="errorSummary">
+				<p>There were errors trying to create the cronman database.</p>
+<?			endif;	?>
+				<ul>
+<?			foreach ($dbCreated as $creationError):	?>
+					<li><?= $creationError ?></li>
+<?			endforeach;	?>
+				</ul>
+			</div>
+<?		endif;
+	?>
+
 	</form>
 </div><!-- form -->
 

@@ -3,6 +3,17 @@
 	class SetupController extends Controller
 	{
 		protected $db;
+		protected $dbConfig;
+		protected $dbExists;
+
+		public function init()
+		{
+			
+			if (isset(Yii::app()->session['config']))
+				$this->dbConfig = Yii::app()->session['config']['db'];
+
+		}
+
 		/**
 		 * Declares class-based actions.
 		 */
@@ -95,13 +106,14 @@
 			$dbConfig = Yii::app()->session['config']['db'];
 			$dbCreated = false;
 			$permissionErrors = array();
+
 			if (isset($_POST['create-now']))
 				$dbCreated = $this->createDb();
 			else
 				$permissionErrors = $this->checkDbPermissions ();
 
 			$this->render( 'createDb',
-				array ('configured' => $this->cmInstalled(), 'permissionErrors' => $permissionErrors, 'dbUser' => $dbConfig['username'], 'dbName' => $dbConfig['dbname'], 'dbCreated' => $dbCreated)
+				array ('configured' => $this->cmInstalled(), 'permissionErrors' => $permissionErrors, 'dbUser' => $dbConfig['username'], 'dbName' => $dbConfig['dbname'], 'dbCreated' => $dbCreated, 'dbExists' => $this->checkCronmanDbExists())
 			);
 		}
 
@@ -122,16 +134,47 @@
 			}
 		}
 
+		/**
+		 *
+		 * @return boolean
+		 */
+		protected function checkCronmanDbExists()
+		{
+			if (!isset($this->dbExists))
+			{
+				$testSql = 'SELECT id FROM job WHERE id = 1';
+				try {
+					$this->getDbConn()->createCommand($testSql)->queryScalar();
+					$this->dbExists = true;
+				} catch (CDbException $exc) {
+					$this->dbExists = false;
+				}
+			}
+
+			return $this->dbExists;
+		}
+
 		protected function createDb()
 		{
-			$dbType = Yii::app()->session['config']['db']['type'];
-			$sql = file_get_contents(Yii::app()->basePath.'/data/schema.'.$dbType.'.sql');
-			$db = $this->getDbConn(Yii::app()->session['config']['db'])->createCommand( $sql );
-			try {
-				$db->execute();
-			} catch (CDbException $exc) {
-				return $exc->getMessage();
+			$errors = array();
+			$dbType = $this->dbConfig['type'];
+			$sqls = file_get_contents(Yii::app()->basePath.'/data/schema.'.$dbType.'.sql');
+			$sqls = explode(';', $sqls);
+			foreach ($sqls as $sql) {
+				if (strlen(trim($sql)) === 0)
+					continue;
+
+				$db = $this->getDbConn(Yii::app()->session['config']['db'])->createCommand( $sql );
+				try {
+					$db->execute();
+				} catch (CDbException $exc) {
+					$errors[] = $exc->getMessage();
+				}
 			}
+
+			if (count($errors) > 0)
+				return $errors;
+
 			return true;
 		}
 
@@ -195,8 +238,11 @@
 		 * @param array $dbConfig
 		 * @return CDbConnection
 		 */
-		protected function getDbConn($dbConfig)
+		protected function getDbConn($dbConfig = null)
 		{
+			if (null === $dbConfig)
+				$dbConfig = $this->dbConfig;
+
 			if (!isset($this->db))
 				$this->db = new CDbConnection($dbConfig['type'].':dbname='.$dbConfig['dbname'].';host='.$dbConfig['hostname'].';port='.$dbConfig['port'], $dbConfig['username'], $dbConfig['password']);
 			return $this->db;
