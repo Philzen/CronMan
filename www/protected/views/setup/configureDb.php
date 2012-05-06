@@ -20,9 +20,8 @@ $this->breadcrumbs=array(
 	elseif(is_string($dbSuccess)):	?>
 	<div class="errorSummary">
 		<p>Hate to say, but these details don't seem to work. Connect failed with following message</p>
-		<span>
-		<?=$dbSuccess ?></span>
-		<br /><br />
+		<ul><li>
+		<?=$dbSuccess ?></li></ul>
 		<p>Please review the message and your login details above and try again.</p>
 	</div>
 
