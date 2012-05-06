@@ -2,6 +2,7 @@
 
 	class SetupController extends Controller
 	{
+		protected $db;
 		/**
 		 * Declares class-based actions.
 		 */
@@ -77,7 +78,7 @@
 
 				$dbSuccess = $this->testDbConnection($config['db']);
 				if (true === $dbSuccess) {
-					// even in case of success we're still showing the details, therefore we're disabling user editing
+					// in case of success we're still showing the details, therefore we're disabling user editing
 					$this->disableForm ($form);
 					$this->writeConfig();
 					$form->action = $this->createUrl('setup/createDb');
@@ -91,10 +92,16 @@
 
 		public function actionCreateDb()
 		{
-			$this->render( 'createDb',
-					array ('configured' => $this->cmInstalled())
-			);
+			$dbConfig = Yii::app()->session['config']['db'];
+			$permissionErrors = array();
+			if (isset($_POST['create-now']))
+				;
+			else
+				$permissionErrors = $this->checkDbPermissions ();
 
+			$this->render( 'createDb',
+				array ('configured' => $this->cmInstalled(), 'permissionErrors' => $permissionErrors, 'dbUser' => $dbConfig['username'], 'dbName' => $dbConfig['dbname'])
+			);
 		}
 
 		/**
@@ -114,16 +121,71 @@
 			}
 		}
 
+		/**
+		 *
+		 * @return array
+		 * @throws Exception In case some database type is tried to be used that has not been tested / implemented yet
+		 */
+		protected function checkDbPermissions()
+		{
+			$sql = array(
+				'pgsql' => array(
+					'user_id' => 'SELECT usesysid FROM pg_user WHERE usename = current_user',
+					'db_owner' => 'SELECT datdba FROM pg_database where datname = current_database()',
+					'create_table' => 'CREATE TABLE test (col1 VARCHAR NOT NULL)',
+					'drop_table' => 'DROP TABLE test'
+				),
+				'mysql' => null,
+				'sqlite' => null
+			);
+
+			$dbType = Yii::app()->session['config']['db']['type'];
+			if ($dbType != 'pgsql')
+				throw new Exception ('Sorry folks - Database support for '.ucfirst (Yii::app()->session['config']['db']['type']).' Database is yet to be implemented.');
+
+			$permissionErrors = array();
+			$db = $this->getDbConn(Yii::app()->session['config']['db']);
+			foreach ($sql[$dbType] as $permission => $command)
+			{
+				try {
+					$db->createCommand( $command )->queryScalar();
+					$permissionErrors[$permission] = false;
+				} catch (Exception $exc) {
+					$permissionErrors[$permission] = $exc->getMessage();
+				}
+			}
+
+			return $permissionErrors;
+		}
+
+		/**
+		 *
+		 * @param array $dbConfig
+		 * @return boolean|string Returns True if the Connection succeeded, otherwise returns the Database Error
+		 * message that was thrown during the connection attempt
+		 */
 		protected function testDbConnection($dbConfig)
 		{
 			try {
-				$db = new CDbConnection($dbConfig['type'].':dbname='.$dbConfig['dbname'].';host='.$dbConfig['hostname'], $dbConfig['username'], $dbConfig['password']);
+				$db = $this->getDbConn($dbConfig);
 				$db->setActive(true);
 			} catch (CDbException $exc) {
 				return $exc->getMessage();
 			}
 			return true;
 
+		}
+
+		/**
+		 *
+		 * @param array $dbConfig
+		 * @return CDbConnection
+		 */
+		protected function getDbConn($dbConfig)
+		{
+			if (!isset($this->db))
+				$this->db = new CDbConnection($dbConfig['type'].':dbname='.$dbConfig['dbname'].';host='.$dbConfig['hostname'], $dbConfig['username'], $dbConfig['password']);
+			return $this->db;
 		}
 
 	}
