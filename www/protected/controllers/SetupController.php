@@ -8,10 +8,8 @@
 
 		public function init()
 		{
-			
 			if (isset(Yii::app()->session['config']))
 				$this->dbConfig = Yii::app()->session['config']['db'];
-
 		}
 
 		/**
@@ -28,10 +26,6 @@
 			);
 		}
 
-		/**
-		 * This is the default 'index' action that is invoked
-		 * when an action is not explicitly requested by users.
-		 */
 		public function actionIndex()
 		{
 			// renders the view file 'protected/views/setup/index.php'
@@ -127,6 +121,10 @@
 			return $generator->save( Yii::app()->params['configPath'] . '/' .Yii::app()->params['configFile'] );
 		}
 
+		/**
+		 * Sets all Form elements to 'readonly'
+		 * @param CForm $form
+		 */
 		protected function disableForm(CForm $form)
 		{
 			foreach ($form->elements as $element) {
@@ -135,7 +133,9 @@
 		}
 
 		/**
+		 * Check if the Cronman Database Tables have already been created
 		 *
+		 * @todo MAKE MORE PRECISE
 		 * @return boolean
 		 */
 		protected function checkCronmanDbExists()
@@ -154,6 +154,10 @@
 			return $this->dbExists;
 		}
 
+		/**
+		 * Execute the Database creation scripts
+		 * @return boolean|array Returns true, or an array containing error/warning messages
+		 */
 		protected function createDb()
 		{
 			$errors = array();
