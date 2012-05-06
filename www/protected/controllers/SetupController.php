@@ -93,14 +93,15 @@
 		public function actionCreateDb()
 		{
 			$dbConfig = Yii::app()->session['config']['db'];
+			$dbCreated = false;
 			$permissionErrors = array();
 			if (isset($_POST['create-now']))
-				;
+				$dbCreated = $this->createDb();
 			else
 				$permissionErrors = $this->checkDbPermissions ();
 
 			$this->render( 'createDb',
-				array ('configured' => $this->cmInstalled(), 'permissionErrors' => $permissionErrors, 'dbUser' => $dbConfig['username'], 'dbName' => $dbConfig['dbname'])
+				array ('configured' => $this->cmInstalled(), 'permissionErrors' => $permissionErrors, 'dbUser' => $dbConfig['username'], 'dbName' => $dbConfig['dbname'], 'dbCreated' => $dbCreated)
 			);
 		}
 
@@ -119,6 +120,19 @@
 			foreach ($form->elements as $element) {
 				$element->attributes['readonly'] = 'readonly';
 			}
+		}
+
+		protected function createDb()
+		{
+			$dbType = Yii::app()->session['config']['db']['type'];
+			$sql = file_get_contents(Yii::app()->basePath.'/data/schema.'.$dbType.'.sql');
+			$db = $this->getDbConn(Yii::app()->session['config']['db'])->createCommand( $sql );
+			try {
+				$db->execute();
+			} catch (CDbException $exc) {
+				return $exc->getMessage();
+			}
+			return true;
 		}
 
 		/**
@@ -184,7 +198,7 @@
 		protected function getDbConn($dbConfig)
 		{
 			if (!isset($this->db))
-				$this->db = new CDbConnection($dbConfig['type'].':dbname='.$dbConfig['dbname'].';host='.$dbConfig['hostname'], $dbConfig['username'], $dbConfig['password']);
+				$this->db = new CDbConnection($dbConfig['type'].':dbname='.$dbConfig['dbname'].';host='.$dbConfig['hostname'].';port='.$dbConfig['port'], $dbConfig['username'], $dbConfig['password']);
 			return $this->db;
 		}
 
