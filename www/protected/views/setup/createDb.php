@@ -70,11 +70,18 @@ $renderErrors = function ($key, $permissionErrors, $labels)
 					<td><?= $renderErrors($key, $permissionErrors, $labels) ?></td>
 				</tr>
 <?			endforeach;	?>
+				<tr>
+					<td>CronMan Database Tables existing</td>
+					<td><?= $dbExists ? 'OK' : '-'  ?></td>
+					<td>CronMan database does <?= $dbExists ? null : 'not' ?> seem to have been initialised (completely) yet.</td>
+				</tr>
 			</tbody>
 		</table>
-<?		if ($weCanRunTheCreationScript):	?>
+<?		if ($weCanRunTheCreationScript && !$dbExists):	?>
 			<p>Now we're ready to create the database tables for the application</p>
 			<input type="submit" name="create-now" value="Create Database Now" />
+<?		elseif ($dbExists):	?>
+			<p>The CronMan database has already been created before, so there is nothing do here.</p>
 <?		else:	?>
 			<p>There seem to be some problems with your permissions. Presumably you should log into your database with a administrative privileges and make sure that the user you entered (<?= $dbUser ?>) is the owner of the database (<?= $dbName ?>), and (as a minimum) that the user is able to create tables in that database. </p>
 			<p>Or go back and review the connection data</p>

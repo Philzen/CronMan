@@ -135,17 +135,16 @@
 		/**
 		 * Check if the Cronman Database Tables have already been created
 		 *
-		 * @todo MAKE MORE PRECISE
 		 * @return boolean
 		 */
 		protected function checkCronmanDbExists()
 		{
 			if (!isset($this->dbExists))
 			{
-				$testSql = 'SELECT id FROM job WHERE id = 1';
+				$testSql = "SELECT count(table_name) FROM information_schema.tables WHERE table_schema = 'public' AND table_name in ('config', 'job_run', 'job')";
 				try {
-					$this->getDbConn()->createCommand($testSql)->queryScalar();
-					$this->dbExists = true;
+					$countTables = $this->getDbConn()->createCommand($testSql)->queryScalar();
+					$this->dbExists = $countTables == 3;
 				} catch (CDbException $exc) {
 					$this->dbExists = false;
 				}
