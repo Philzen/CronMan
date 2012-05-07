@@ -84,16 +84,26 @@
 		{
 			$errors = array();
 			$dbType = $this->dbConfig->dbType;
-			$sqls = file_get_contents(\Yii::app()->basePath.'/data/schema.'.$dbType.'.sql');
+			$scriptDirectory = \Yii::app()->params['configPath'];
+
+			/** Parse DDL Scripts */
+			$sqls = file_get_contents($scriptDirectory .'/schema.'.$dbType.'.sql');
 			$sqls = explode(';', $sqls);
-			foreach ($sqls as $sql) {
+
+			/** Parse DML Scripts for Initialisation */
+			$insertSqls = file_get_contents($scriptDirectory .'/insert-baseline.sql');
+			$insertSqls = explode(';', $insertSqls);
+
+			$sqls = array_merge($sqls, $insertSqls);
+			foreach ($sqls as $sql)
+			{
 				if (strlen(trim($sql)) === 0)
 					continue;
 
 				$db = $this->getDbConn()->createCommand( $sql );
 				try {
 					$db->execute();
-				} catch (CDbException $exc) {
+				} catch (\CDbException $exc) {
 					$errors[] = $exc->getMessage();
 				}
 			}
@@ -161,9 +171,22 @@
 
 			if (!isset($this->db))
 				$this->db = new \CDbConnection(
-						"{$dbConfig->dbType}:dbname={$dbConfig->dbname};host={$dbConfig->hostname};port={$dbConfig->port}",
+						self::getDSN($dbConfig->dbType ,$dbConfig->hostname, $dbConfig->port, $dbConfig->dbname),
 						$dbConfig->username, $dbConfig->password );
 
 			return $this->db;
+		}
+
+		/**
+		 * Get a DSN connection string
+		 * @param string $dbType
+		 * @param string $host
+		 * @param int $port
+		 * @param string $dbname
+		 * @return string
+		 */
+		public static function getDSN($dbType, $host, $port, $dbname)
+		{
+			return "$dbType:dbname=$dbname;host=$host;port=$port";
 		}
 	}
