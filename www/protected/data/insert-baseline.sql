@@ -1,0 +1,1 @@
+INSERT INTO config (key_name, "value") VALUES ('dbVersion', '0.1');
