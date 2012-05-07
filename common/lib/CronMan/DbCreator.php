@@ -3,8 +3,9 @@
 
 	/**
 	 * A helper class to create the CronMan Database
-	 * @uses DbDetailsForm
-	 * @uses CDbConnection
+	 * @uses \Yii
+	 * @uses \DbDetailsForm
+	 * @uses \CDbConnection
 	 */
 	class DbCreator
 	{
@@ -79,11 +80,11 @@
 		 * Execute the Database creation scripts
 		 * @return boolean|array Returns true, or an array containing error/warning messages
 		 */
-		protected function createDb()
+		public function createDb()
 		{
 			$errors = array();
 			$dbType = $this->dbConfig->dbType;
-			$sqls = file_get_contents(Yii::app()->basePath.'/data/schema.'.$dbType.'.sql');
+			$sqls = file_get_contents(\Yii::app()->basePath.'/data/schema.'.$dbType.'.sql');
 			$sqls = explode(';', $sqls);
 			foreach ($sqls as $sql) {
 				if (strlen(trim($sql)) === 0)
