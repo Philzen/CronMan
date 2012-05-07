@@ -45,18 +45,11 @@ return array(
 			),
 		),
 //		'db'=>array(
-//			'connectionString' => 'sqlite:'.dirname(__FILE__).'/../data/testdrive.db',
+//			'connectionString' => 'pgsql:host=localhost;dbname=cronman',
+//			'emulatePrepare' => true,
+//			'username' => 'cronman',
+//			'password' => 'cronman',
 //		),
-		// uncomment the following to use a MySQL database
-		/*
-		'db'=>array(
-			'connectionString' => 'mysql:host=localhost;dbname=testdrive',
-			'emulatePrepare' => true,
-			'username' => 'root',
-			'password' => '',
-			'charset' => 'utf8',
-		),
-		*/
 		'errorHandler'=>array(
 			// use 'site/error' action to display errors
             'errorAction'=>'site/error',
@@ -81,9 +74,11 @@ return array(
 	// application-level parameters that can be accessed
 	// using Yii::app()->params['paramName']
 	'params'=>array(
+		'version' => '0.1',
+		'dbVersion' => '0.1',
+		'configPath'=> realpath(__DIR__.'/../data'),
+		'configFile'=> 'cronMan.conf.php',
 		// this is used in contact page
 		'adminEmail'=>'webmaster@example.com',
-		'configPath'=> realpath(__DIR__.'/../data'),
-		'configFile'=> 'cronMan.conf.php'
 	),
 );
