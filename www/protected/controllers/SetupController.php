@@ -44,7 +44,7 @@
 		public function actionSelectDb()
 		{
 			$model = new SelectDbForm();
-			$form = new CForm('application.views.setup.selectDbForm', $model);
+			$form = new CForm('application.views.setup.forms.selectDbForm', $model);
 
 			// Restore setting, if present
 			if (isset(Yii::app()->session['config']['db']['type']))
@@ -72,7 +72,7 @@
 			if (!isset($_POST['DbDetailsForm']) && isset(Yii::app()->session['config']['db']))
 				$model->attributes = Yii::app()->session['config']['db'];
 			$model->dbType = $config['db']['type'];
-			$form = new CForm('application.views.setup.'.$config['db']['type'].'DetailsForm', $model);
+			$form = new CForm('application.views.setup.forms.'.$config['db']['type'].'DetailsForm', $model);
 
 			// Restore previous entries, if present
 
@@ -121,6 +121,18 @@
 				$viewParams['dbVersion'] = '{NULL}';
 
 			$this->render( 'createDb',$viewParams);
+		}
+
+		public function actionRunners()
+		{
+			$model = new RunnersConfigForm();
+			$form = new CForm('application.views.setup.forms.runnersConfigForm', $model);
+			if ($form->submitted('update-runners') && $form->validate())
+			{
+				// SUper !
+			}
+
+			$this->render( 'runners', array('form' => $form));
 		}
 
 		/**

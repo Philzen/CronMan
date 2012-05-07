@@ -123,6 +123,10 @@ $fVersionOk = function ($dbVersion)
 				</ul>
 			</div>
 <?		endif;
+		if (!$configured && ($dbCreated === true || $dbExists === true) ):	?>
+			<p>The installation is now almost finished. In the last and final step you will configure how CronMan execution will be triggered.</p>
+			<a href="<?= $this->createUrl('setup/runners') ?>"><button>Go to step 5</button></a>
+<?		endif;
 	?>
 
 	</form>
