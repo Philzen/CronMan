@@ -101,23 +101,26 @@
 		{
 			$dbConfig = new DbConnectionDetails();
 			$dbConfig->attributes = Yii::app()->session['config']['db'];
+			$viewParams = array('configured' => $this->cmInstalled(), 'dbUser' => $dbConfig->username, 'dbName' => $dbConfig->dbname);
 
 			$cronmanDbHelper = new DbCreator($dbConfig);
 
 			$dbCreated = false;
-			$permissionErrors = array();
 
 			if (isset($_POST['create-now']))
 				$dbCreated = $cronmanDbHelper->createDb();
 			else
-				$permissionErrors = $cronmanDbHelper->checkDbPermissions();
-			$this->render( 'createDb',
-				array (
-					'configured' => $this->cmInstalled(),
-					'permissionErrors' => $permissionErrors,
-					'dbUser' => $dbConfig->username,
-					'dbName' => $dbConfig->dbname, 'dbCreated' => $dbCreated, 'dbExists' => $cronmanDbHelper->checkCronmanDbExists())
-			);
+				$viewParams['permissionErrors'] = $cronmanDbHelper->checkDbPermissions();
+
+
+			$viewParams['dbCreated'] = $dbCreated;
+			$viewParams['dbExists'] = $cronmanDbHelper->checkCronmanDbExists();
+			if ($viewParams['dbExists'] && (null !== $dbVersion = Config::model()->findByPk( Config::KEY_DB_VERSION )))
+				$viewParams['dbVersion'] = $dbVersion->value;
+			else
+				$viewParams['dbVersion'] = '{NULL}';
+
+			$this->render( 'createDb',$viewParams);
 		}
 
 		/**

@@ -46,13 +46,18 @@ $renderErrors = function ($key, $permissionErrors, $labels)
 		return $labels[$key]['ok'];
 };
 
+$fVersionOk = function ($dbVersion)
+{
+	return (string)$dbVersion === (string)Yii::app()->params->dbVersion;
+}
+
 ?>
 <h2>Setup</h2>
 <h3><? if (!$configured) echo 'Step 4 - '; ?>Create CronMan Database</h3>
 
 <div class="form">
 	<form method="post">
-<?		if (count($permissionErrors)):
+<?		if (isset($permissionErrors) && count($permissionErrors)):
 			$weCanRunTheCreationScript = true;	?>
 		<table>
 			<caption>Checking your Database Permissions...</caption>
@@ -60,20 +65,31 @@ $renderErrors = function ($key, $permissionErrors, $labels)
 				<tr><th>Test</th><th>Result</th><th></th></tr>
 			</thead>
 			<tbody>
-<?			foreach ($permissionErrors as $key => $errors):
-				if (is_array($errors)) $weCanRunTheCreationScript = false;
-?>
-				<tr>
-					<td><?= $labels[ $key ]['name'] ?></td>
-					<td><?= $okNotOk($key, $permissionErrors) ?></td>
-					<td><?= $renderErrors($key, $permissionErrors, $labels) ?></td>
-				</tr>
-<?			endforeach;	?>
 				<tr>
 					<td>CronMan Database Tables existing</td>
-					<td><?= $dbExists ? 'OK' : '-'  ?></td>
-					<td>CronMan database does <?= $dbExists ? null : 'not' ?> seem to have been initialised (completely) yet.</td>
+					<td<?= $dbExists ? ' class="success"' : null ?>><?= $dbExists ? 'OK' : '-'  ?></td>
+					<td<?= $dbExists ? ' class="success"' : null ?>>CronMan database does <?= $dbExists ? null : 'not' ?> seem to have been initialised (completely) yet.</td>
 				</tr>
+				<? if ($dbExists):
+					$cssClass = $fVersionOk($dbVersion) ? 'success' : 'errorMessage' ?>
+				<tr>
+					<td>CronMan Database Version</td>
+					<td class="<?= $cssClass ?>"><?=  $fVersionOk($dbVersion) ? "OK" : $dbVersion  ?></td>
+					<td class="<?= $cssClass ?>">
+						The database version (v<?=$dbVersion?>) is <?= $fVersionOk($dbVersion) ? null : 'not' ?> the recent one<?= $fVersionOk($dbVersion) ? null: '(v'.Yii::app()->params->dbVersion.')' ?>.
+					</td>
+				</tr>
+				<? else:	?>
+				<?	foreach ($permissionErrors as $key => $errors):
+						if (is_array($errors)) $weCanRunTheCreationScript = false;
+						$cssClass = $okNotOk($key, $permissionErrors) ? 'success' : 'warning';?>
+				<tr>
+					<td><?= $labels[ $key ]['name'] ?></td>
+					<td class="<?= $cssClass ?>"><?= $okNotOk($key, $permissionErrors) ?></td>
+					<td class="<?= $cssClass ?>"><?= $renderErrors($key, $permissionErrors, $labels) ?></td>
+				</tr>
+				<?	endforeach;
+				endif;	?>
 			</tbody>
 		</table>
 <?		if ($weCanRunTheCreationScript && !$dbExists):	?>
