@@ -52,3 +52,4 @@ class Controller extends CController
 	{
 		return isset(Yii::app()->session['config']['installation-finished']) && Yii::app()->session['config']['installation-finished'] !== false;
 	}
+}
