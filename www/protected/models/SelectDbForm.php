@@ -12,6 +12,7 @@ class SelectDbForm extends CFormModel
 		return array(
 			// name, email, subject and body are required
 			array('dbType', 'required'),
+			array('dbType', 'in', 'range' => array('pgsql', 'mysql', 'sqlite'), 'message' => 'Invalid Database Type'),
 		);
 	}
 

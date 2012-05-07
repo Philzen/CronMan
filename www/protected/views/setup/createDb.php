@@ -11,7 +11,7 @@ $labels = array(
 		'error' => "Either this is the wrong database or the wrong owner, but as matter of fact login User '$dbUser' is not owner of database '$dbName'",
 	),
 	'db_owner' => array(
-		'name' => 'Database Owner',
+		'name' => 'Database Ownership',
 		'ok' => "Login user '$dbUser' is the owner of database '$dbName'",
 		'error' => "It looks like the logon user '$dbUser' is not owner of database '$dbName' - or this user has no permissions to query this piece of information. Please check the errors below and also if you maybe have the right logon user but the wrong database (or vice versa).",
 	),
@@ -26,7 +26,6 @@ $labels = array(
 		'error' => "Dropping of the test database failed.",
 	),
 );
-
 
 $okNotOk = function ($key, $permissionErrors)
 {

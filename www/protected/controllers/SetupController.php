@@ -1,5 +1,6 @@
 <?php
 
+	use CronMan\DbCreator;
 	class SetupController extends Controller
 	{
 		protected $db;
@@ -67,10 +68,10 @@
 			$dbSuccess = false;
 			$config =Yii::app()->session['config'];
 
-			$model = new DbDetailsForm();
-
+			$model = new DbConnectionDetails();
 			if (!isset($_POST['DbDetailsForm']) && isset(Yii::app()->session['config']['db']))
 				$model->attributes = Yii::app()->session['config']['db'];
+			$model->dbType = $config['db']['type'];
 			$form = new CForm('application.views.setup.'.$config['db']['type'].'DetailsForm', $model);
 
 			// Restore previous entries, if present
@@ -81,7 +82,8 @@
 				$config['db'] = array_merge($config['db'], $model->getAttributes());
 				Yii::app()->session['config'] = $config;
 
-				$dbSuccess = $this->testDbConnection($config['db']);
+				$cronmanDbHelper = new DbCreator($model);
+				$dbSuccess = $cronmanDbHelper->testDbConnection();
 				if (true === $dbSuccess) {
 					// in case of success we're still showing the details, therefore we're disabling user editing
 					$this->disableForm ($form);
@@ -97,17 +99,24 @@
 
 		public function actionCreateDb()
 		{
-			$dbConfig = Yii::app()->session['config']['db'];
+			$dbConfig = new DbConnectionDetails();
+			$dbConfig->attributes = Yii::app()->session['config']['db'];
+
+			$cronmanDbHelper = new DbCreator($dbConfig);
+
 			$dbCreated = false;
 			$permissionErrors = array();
 
 			if (isset($_POST['create-now']))
-				$dbCreated = $this->createDb();
+				$dbCreated = $cronmanDbHelper->createDb();
 			else
-				$permissionErrors = $this->checkDbPermissions ();
-
+				$permissionErrors = $cronmanDbHelper->checkDbPermissions();
 			$this->render( 'createDb',
-				array ('configured' => $this->cmInstalled(), 'permissionErrors' => $permissionErrors, 'dbUser' => $dbConfig['username'], 'dbName' => $dbConfig['dbname'], 'dbCreated' => $dbCreated, 'dbExists' => $this->checkCronmanDbExists())
+				array (
+					'configured' => $this->cmInstalled(),
+					'permissionErrors' => $permissionErrors,
+					'dbUser' => $dbConfig->username,
+					'dbName' => $dbConfig->dbname, 'dbCreated' => $dbCreated, 'dbExists' => $cronmanDbHelper->checkCronmanDbExists())
 			);
 		}
 
@@ -130,125 +139,6 @@
 			foreach ($form->elements as $element) {
 				$element->attributes['readonly'] = 'readonly';
 			}
-		}
-
-		/**
-		 * Check if the Cronman Database Tables have already been created
-		 *
-		 * @return boolean
-		 */
-		protected function checkCronmanDbExists()
-		{
-			if (!isset($this->dbExists))
-			{
-				$testSql = "SELECT count(table_name) FROM information_schema.tables WHERE table_schema = 'public' AND table_name in ('config', 'job_run', 'job')";
-				try {
-					$countTables = $this->getDbConn()->createCommand($testSql)->queryScalar();
-					$this->dbExists = $countTables == 3;
-				} catch (CDbException $exc) {
-					$this->dbExists = false;
-				}
-			}
-
-			return $this->dbExists;
-		}
-
-		/**
-		 * Execute the Database creation scripts
-		 * @return boolean|array Returns true, or an array containing error/warning messages
-		 */
-		protected function createDb()
-		{
-			$errors = array();
-			$dbType = $this->dbConfig['type'];
-			$sqls = file_get_contents(Yii::app()->basePath.'/data/schema.'.$dbType.'.sql');
-			$sqls = explode(';', $sqls);
-			foreach ($sqls as $sql) {
-				if (strlen(trim($sql)) === 0)
-					continue;
-
-				$db = $this->getDbConn(Yii::app()->session['config']['db'])->createCommand( $sql );
-				try {
-					$db->execute();
-				} catch (CDbException $exc) {
-					$errors[] = $exc->getMessage();
-				}
-			}
-
-			if (count($errors) > 0)
-				return $errors;
-
-			return true;
-		}
-
-		/**
-		 *
-		 * @return array
-		 * @throws Exception In case some database type is tried to be used that has not been tested / implemented yet
-		 */
-		protected function checkDbPermissions()
-		{
-			$sql = array(
-				'pgsql' => array(
-					'user_id' => 'SELECT usesysid FROM pg_user WHERE usename = current_user',
-					'db_owner' => 'SELECT datdba FROM pg_database where datname = current_database()',
-					'create_table' => 'CREATE TABLE test (col1 VARCHAR NOT NULL)',
-					'drop_table' => 'DROP TABLE test'
-				),
-				'mysql' => null,
-				'sqlite' => null
-			);
-
-			$dbType = Yii::app()->session['config']['db']['type'];
-			if ($dbType != 'pgsql')
-				throw new Exception ('Sorry folks - Database support for '.ucfirst (Yii::app()->session['config']['db']['type']).' Database is yet to be implemented.');
-
-			$permissionErrors = array();
-			$db = $this->getDbConn(Yii::app()->session['config']['db']);
-			foreach ($sql[$dbType] as $permission => $command)
-			{
-				try {
-					$db->createCommand( $command )->queryScalar();
-					$permissionErrors[$permission] = false;
-				} catch (Exception $exc) {
-					$permissionErrors[$permission] = $exc->getMessage();
-				}
-			}
-
-			return $permissionErrors;
-		}
-
-		/**
-		 *
-		 * @param array $dbConfig
-		 * @return boolean|string Returns True if the Connection succeeded, otherwise returns the Database Error
-		 * message that was thrown during the connection attempt
-		 */
-		protected function testDbConnection($dbConfig)
-		{
-			try {
-				$db = $this->getDbConn($dbConfig);
-				$db->setActive(true);
-			} catch (CDbException $exc) {
-				return $exc->getMessage();
-			}
-			return true;
-
-		}
-
-		/**
-		 *
-		 * @param array $dbConfig
-		 * @return CDbConnection
-		 */
-		protected function getDbConn($dbConfig = null)
-		{
-			if (null === $dbConfig)
-				$dbConfig = $this->dbConfig;
-
-			if (!isset($this->db))
-				$this->db = new CDbConnection($dbConfig['type'].':dbname='.$dbConfig['dbname'].';host='.$dbConfig['hostname'].';port='.$dbConfig['port'], $dbConfig['username'], $dbConfig['password']);
-			return $this->db;
 		}
 
 	}
