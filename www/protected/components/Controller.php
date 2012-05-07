@@ -22,6 +22,26 @@ class Controller extends CController
 	 */
 	public $breadcrumbs=array();
 
+	public function __construct($id, $module = null)
+	{
+		parent::__construct($id, $module);
+
+		// TODO Find a better place to do the following
+		if (file_exists( Yii::app()->params['configPath'] . '/' .Yii::app()->params['configFile'] ))
+		{
+			$cronmanConfig = CmConfig::get();
+			if (!$this->cmInstalled())
+				// as long as Installation process is not completed, the config is carried over in
+				Yii::app()->session['config'] = $cronmanConfig;
+
+//			$this->prepareCronmanDatabase($cronmanConfig['db']);
+		}
+
+
+		if ($this->id !== 'setup' && !$this->cmInstalled())
+			$this->redirect(Yii::app()->baseUrl . '/setup');
+	}
+
 	protected function cmConfigLoaded()
 	{
 		// Yii::app()->session->clear();
@@ -32,19 +52,3 @@ class Controller extends CController
 	{
 		return isset(Yii::app()->session['config']['installation-finished']) && Yii::app()->session['config']['installation-finished'] !== false;
 	}
-
-	public function __construct($id, $module = null)
-	{
-		parent::__construct($id, $module);
-
-		// TODO Find a better place to do the following
-		if (!$this->cmConfigLoaded())
-		{
-			if ( file_exists( Yii::app()->params['configPath'] . '/' .Yii::app()->params['configFile'] ))
-				Yii::app()->session['config'] = include Yii::app()->params['configPath'] . '/' .Yii::app()->params['configFile'];
-		}
-		if ($this->id !== 'setup' && !$this->cmInstalled())
-			$this->redirect(Yii::app()->baseUrl . '/setup');
-
-	}
-}
