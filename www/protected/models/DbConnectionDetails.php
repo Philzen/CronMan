@@ -1,7 +1,8 @@
 <?php
 
-class DbDetailsForm extends CFormModel
+class DbConnectionDetails extends CFormModel
 {
+	public $dbType;
 	public $hostname;
 	public $username;
 	public $password;
@@ -16,6 +17,7 @@ class DbDetailsForm extends CFormModel
 		return array(
 			array('hostname,port,dbname,username,password', 'required'),
 			array('port', 'type', 'type' => 'integer'),
+			array('dbType', 'type', 'type' => 'hidden'),
 		);
 	}
 
